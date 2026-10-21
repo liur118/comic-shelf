@@ -34,6 +34,11 @@ const isValid = (token: string | undefined) => !!token && !!db.prepare('SELECT 1
 const setCookie = (reply: FastifyReply, value: string, maxAge: number) =>
   reply.header('Set-Cookie', `${COOKIE}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`)
 
+// 登录限流：同一 IP 连续失败 MAX_FAILS 次后锁定 LOCK_MS，成功登录清零
+const MAX_FAILS = 5
+const LOCK_MS = 15 * 60 * 1000
+const fails = new Map<string, { count: number; lockedUntil: number }>()
+
 export function registerAuth(app: FastifyInstance) {
   app.addHook('onRequest', async (req, reply) => {
     if (!req.url.startsWith('/api/') || req.url === '/api/login') return
@@ -41,10 +46,22 @@ export function registerAuth(app: FastifyInstance) {
   })
 
   app.post<{ Body: { username: string; password: string } }>('/api/login', (req, reply) => {
+    const record = fails.get(req.ip)
+    if (record && record.lockedUntil > Date.now()) {
+      const minutes = Math.ceil((record.lockedUntil - Date.now()) / 60000)
+      return reply.code(429).send({ message: `尝试次数过多，请 ${minutes} 分钟后再试` })
+    }
     const admin = db.prepare('SELECT username, password_hash FROM admin').get() as Admin
     if (req.body.username !== admin.username || !verifyPassword(req.body.password, admin.password_hash)) {
-      return reply.code(401).send({ message: '账号或密码错误' })
+      const count = (record?.count ?? 0) + 1
+      if (count >= MAX_FAILS) {
+        fails.set(req.ip, { count: 0, lockedUntil: Date.now() + LOCK_MS })
+        return reply.code(429).send({ message: `尝试次数过多，请 ${LOCK_MS / 60000} 分钟后再试` })
+      }
+      fails.set(req.ip, { count, lockedUntil: 0 })
+      return reply.code(401).send({ message: `账号或密码错误，还可尝试 ${MAX_FAILS - count} 次` })
     }
+    fails.delete(req.ip)
     const token = crypto.randomBytes(32).toString('hex')
     db.prepare('INSERT INTO tokens (token) VALUES (?)').run(token)
     setCookie(reply, token, 365 * 24 * 3600)
