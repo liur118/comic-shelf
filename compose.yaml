@@ -1,0 +1,11 @@
+services:
+  comic-shelf:
+    build: .
+    image: comic-shelf
+    container_name: comic-shelf
+    restart: unless-stopped
+    ports:
+      - "10101:10101"
+    volumes:
+      - /volumn1/xmedia:/data:ro   # 漫画资源，网页中添加资源库时填 /data 下的路径
+      - /volumn1/docker/ss/data:/app/data           # SQLite 数据库
