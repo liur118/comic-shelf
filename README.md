@@ -34,4 +34,4 @@ docker compose up -d --build   # 构建镜像并启动，http://<主机>:10101
 ```
 
 - 漫画资源 `/volume1/xmedia` 只读挂载到容器 `/data`，网页添加资源库时填容器内路径，如 `/data/漫画`
-- 数据库持久化在项目目录 `./data`
+- 数据库持久化到 `/volume1/docker/ss/data`（挂载为容器内 `/app/data`）
