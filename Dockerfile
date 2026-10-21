@@ -1,10 +1,10 @@
 # 构建阶段：完整镜像自带编译工具，better-sqlite3 无预编译包时可本地编译
 FROM docker.1ms.run/node:22-bookworm AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json ./
 COPY server/package.json server/
 COPY web/package.json web/
-RUN npm ci
+RUN npm i
 COPY . .
 RUN npm run build
 
