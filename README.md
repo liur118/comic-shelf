@@ -33,5 +33,5 @@ docker exec comic-shelf node reset_pass.js <新密码>          # Docker
 docker compose up -d --build   # 构建镜像并启动，http://<主机>:10101
 ```
 
-- 漫画资源 `/volumn1/xmedia` 只读挂载到容器 `/data`，网页添加资源库时填容器内路径，如 `/data/漫画`
+- 漫画资源 `/volume1/xmedia` 只读挂载到容器 `/data`，网页添加资源库时填容器内路径，如 `/data/漫画`
 - 数据库持久化在项目目录 `./data`
