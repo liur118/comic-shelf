@@ -18,7 +18,7 @@ npm run dev        # 开发：前端 http://localhost:5173，后端 :10101
 npm run build && npm start   # 生产：http://localhost:10101
 ```
 
-首次启动自动创建管理员 `admin`，随机初始密码打印在控制台（Docker 下用 `docker logs comic-shelf` 查看）。
+首次启动自动创建管理员 `comic`，随机初始密码打印在控制台（Docker 下用 `docker logs comic-shelf` 查看）。
 
 重置密码（会同时注销所有已登录设备）：
 

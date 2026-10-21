@@ -18,4 +18,4 @@ if (db.prepare('UPDATE admin SET password_hash = ?').run(hash).changes === 0) {
   process.exit(1)
 }
 db.prepare('DELETE FROM tokens').run()
-console.log('管理员 admin 密码已重置，所有登录状态已失效')
+console.log('管理员 comic 密码已重置，所有登录状态已失效')

@@ -20,8 +20,8 @@ type Admin = { username: string; password_hash: string }
 // 首次启动没有管理员时自动生成随机密码并打印到控制台
 if (!db.prepare('SELECT 1 FROM admin').get()) {
   const password = crypto.randomBytes(9).toString('base64url')
-  db.prepare('INSERT INTO admin (id, username, password_hash) VALUES (1, ?, ?)').run('admin', hashPassword(password))
-  console.log(`\n[comic-shelf] 已初始化管理员账号 admin，初始密码：${password}\n[comic-shelf] 重置密码：node reset_pass.js <新密码>\n`)
+  db.prepare('INSERT INTO admin (id, username, password_hash) VALUES (1, ?, ?)').run('comic', hashPassword(password))
+  console.log(`\n[comic-shelf] 已初始化管理员账号 comic，初始密码：${password}\n[comic-shelf] 重置密码：node reset_pass.js <新密码>\n`)
 }
 
 function readToken(req: FastifyRequest) {
